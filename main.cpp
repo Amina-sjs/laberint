@@ -59,3 +59,6 @@ void generateMaze(int x, int y) {
         }
     }
 }
+
+maze[1][1] = PATH;  // Старт
+maze[rows - 2][cols - 2] = PATH;  // Выход
