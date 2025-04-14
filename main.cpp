@@ -12,6 +12,7 @@ int main() {
     printMaze();
     generateMaze(1, 1);
     printMaze();
+    solveMaze(1, 1, rows - 2, cols - 2);
     return 0;
 }
 
@@ -62,3 +63,27 @@ void generateMaze(int x, int y) {
 
 maze[1][1] = PATH;  // Старт
 maze[rows - 2][cols - 2] = PATH;  // Выход
+
+const char VISITED_PATH = '.';
+
+bool solveMaze(int x, int y, int ex, int ey) {
+    if (x == ex && y == ey) {
+        maze[x][y] = VISITED_PATH;
+        return true;
+    }
+
+    if (!isInBounds(x, y) || maze[x][y] != PATH)
+        return false;
+
+    maze[x][y] = VISITED_PATH;
+
+    for (int i = 0; i < 4; i++) {
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+        if (solveMaze(nx, ny, ex, ey)) return true;
+    }
+
+    maze[x][y] = PATH;
+    return false;
+}
+
