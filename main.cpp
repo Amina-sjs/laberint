@@ -2,27 +2,67 @@
 #include <vector>
 #include <ctime>
 #include <cstdlib>
+#include <algorithm>
 
 using namespace std;
 
-int main() {
-    cout << "Maze Generator Project (C++)" << endl;
-    srand(time(0));
-    initMaze();
-    printMaze();
-    generateMaze(1, 1);
-    printMaze();
-    solveMaze(1, 1, rows - 2, cols - 2);
-    return 0;
-}
-
+// Символы
 const char WALL = '#';
 const char PATH = ' ';
+const char VISITED_PATH = '.';
+
+// Размеры по умолчанию
 const int DEFAULT_ROWS = 21;
 const int DEFAULT_COLS = 21;
 
-int rows = DEFAULT_ROWS, cols = DEFAULT_COLS;
+int rows, cols;
 vector<vector<char>> maze;
+
+// Направления: вверх, вниз, влево, вправо
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
+
+// Функции
+void initMaze();
+void printMaze();
+bool isInBounds(int x, int y);
+void generateMaze(int x, int y);
+bool solveMaze(int x, int y, int ex, int ey);
+
+int main() {
+    cout << "Maze Generator Project (C++)" << endl;
+
+    // Ввод размеров от пользователя
+    cout << "Введите размер лабиринта (нечетные числа, например 21 21): ";
+    cin >> rows >> cols;
+
+    // Проверка на корректность
+    if (rows < 5 || cols < 5 || rows % 2 == 0 || cols % 2 == 0) {
+        cout << "Размеры должны быть нечетными и >= 5. Используется по умолчанию (21x21)." << endl;
+        rows = DEFAULT_ROWS;
+        cols = DEFAULT_COLS;
+    }
+
+    srand(time(0));
+    initMaze();
+    generateMaze(1, 1);
+
+    // Старт и финиш
+    maze[1][1] = PATH;
+    maze[rows - 2][cols - 2] = PATH;
+
+    cout << "\nСгенерированный лабиринт:\n";
+    printMaze();
+
+    if (solveMaze(1, 1, rows - 2, cols - 2)) {
+        cout << "\nРешение лабиринта:\n";
+        printMaze();
+    } else {
+        cout << "\nПуть не найден.\n";
+    }
+
+    return 0;
+}
 
 void initMaze() {
     maze = vector<vector<char>>(rows, vector<char>(cols, WALL));
@@ -33,13 +73,9 @@ void printMaze() {
         for (int j = 0; j < cols; j++) {
             cout << maze[i][j];
         }
-        cout << 'Done!\n';
+        cout << '\n';
     }
 }
-
-
-int dx[] = { -1, 1, 0, 0 };
-int dy[] = { 0, 0, -1, 1 };
 
 bool isInBounds(int x, int y) {
     return x > 0 && y > 0 && x < rows - 1 && y < cols - 1;
@@ -61,11 +97,6 @@ void generateMaze(int x, int y) {
     }
 }
 
-maze[1][1] = PATH;  // Старт
-maze[rows - 2][cols - 2] = PATH;  // Выход
-
-const char VISITED_PATH = '.';
-
 bool solveMaze(int x, int y, int ex, int ey) {
     if (x == ex && y == ey) {
         maze[x][y] = VISITED_PATH;
@@ -80,10 +111,10 @@ bool solveMaze(int x, int y, int ex, int ey) {
     for (int i = 0; i < 4; i++) {
         int nx = x + dx[i];
         int ny = y + dy[i];
-        if (solveMaze(nx, ny, ex, ey)) return true;
+        if (solveMaze(nx, ny, ex, ey))
+            return true;
     }
 
-    maze[x][y] = PATH;
+    maze[x][y] = PATH; // откат назад
     return false;
 }
-
