@@ -3,26 +3,23 @@
 #include <ctime>
 #include <cstdlib>
 #include <algorithm>
+#include <windows.h>  // Добавлено для кодировки UTF-8
 
 using namespace std;
 
-// Символы
 const char WALL = '#';
 const char PATH = ' ';
 const char VISITED_PATH = '.';
 
-// Размеры по умолчанию
 const int DEFAULT_ROWS = 21;
 const int DEFAULT_COLS = 21;
 
 int rows, cols;
 vector<vector<char>> maze;
 
-// Направления: вверх, вниз, влево, вправо
 int dx[] = {-1, 1, 0, 0};
 int dy[] = {0, 0, -1, 1};
 
-// Функции
 void initMaze();
 void printMaze();
 bool isInBounds(int x, int y);
@@ -30,15 +27,15 @@ void generateMaze(int x, int y);
 bool solveMaze(int x, int y, int ex, int ey);
 
 int main() {
+    SetConsoleOutputCP(CP_UTF8); // Настроить кодировку UTF-8
+
     cout << "Maze Generator Project (C++)" << endl;
 
-    // Ввод размеров от пользователя
-    cout << "Введите размер лабиринта (нечетные числа, например 21 21): ";
+    cout << "Enter maze size (odd numbers, e.g., 21 21): ";
     cin >> rows >> cols;
 
-    // Проверка на корректность
     if (rows < 5 || cols < 5 || rows % 2 == 0 || cols % 2 == 0) {
-        cout << "Размеры должны быть нечетными и >= 5. Используется по умолчанию (21x21)." << endl;
+        cout << "Size should be odd and >= 5. Using default size (21x21)." << endl;
         rows = DEFAULT_ROWS;
         cols = DEFAULT_COLS;
     }
@@ -47,18 +44,17 @@ int main() {
     initMaze();
     generateMaze(1, 1);
 
-    // Старт и финиш
     maze[1][1] = PATH;
     maze[rows - 2][cols - 2] = PATH;
 
-    cout << "\nСгенерированный лабиринт:\n";
+    cout << "\nGenerated Maze:\n";
     printMaze();
 
     if (solveMaze(1, 1, rows - 2, cols - 2)) {
-        cout << "\nРешение лабиринта:\n";
+        cout << "\nSolved Maze:\n";
         printMaze();
     } else {
-        cout << "\nПуть не найден.\n";
+        cout << "\nNo solution found.\n";
     }
 
     return 0;
@@ -115,6 +111,6 @@ bool solveMaze(int x, int y, int ex, int ey) {
             return true;
     }
 
-    maze[x][y] = PATH; // откат назад
+    maze[x][y] = PATH;
     return false;
 }
