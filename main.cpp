@@ -33,7 +33,7 @@ void printMaze() {
         for (int j = 0; j < cols; j++) {
             cout << maze[i][j];
         }
-        cout << '\n';
+        cout << 'Done!\n';
     }
 }
 
